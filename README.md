@@ -29,15 +29,15 @@ Usage
 Include this file on your page below Ractive, e.g:
 
 ```html
-<script src='lib/Ractive.js'></script>
-<script src='lib/Ractive-decorators-minmaxwidth.js'></script>
+<script src='lib/ractive.js'></script>
+<script src='lib/ractive-decorators-minmaxwidth.js'></script>
 ```
 
 Or, if you're using a module loader, require this module:
 
 ```js
 // requiring the plugin will 'activate' it - no need to use the return value
-require( 'Ractive-decorators-minmaxwidth' );
+require( 'ractive-decorators-minmaxwidth' );
 ```
 
 Use the decorator in your template with any of the following syntaxes (explanation of the variables in the "options" syntax):

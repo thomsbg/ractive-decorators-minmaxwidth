@@ -11,20 +11,19 @@ module.exports = function ( grunt ) {
 				unused: true,
 				undef: true,
 				smarttabs: true,
+				browser: true,
 				globals: {
 					define: true,
 					module: true,
-					require: true,
-					window: true,
-					document: true
+					require: true
 				}
 			}
 		},
 
 		concat: {
 			bundle: {
-				src: 'src/Ractive-decorators-minmaxwidth.js',
-				dest: 'tmp/Ractive-decorators-minmaxwidth.js'
+				src: 'src/ractive-decorators-minmaxwidth.js',
+				dest: 'tmp/ractive-decorators-minmaxwidth.js'
 			},
 			options: {
 				process: {
@@ -41,8 +40,8 @@ module.exports = function ( grunt ) {
 
 		uglify: {
 			bundle: {
-				src: 'tmp/Ractive-decorators-minmaxwidth.js',
-				dest: 'tmp/Ractive-decorators-minmaxwidth.min.js'
+				src: 'tmp/ractive-decorators-minmaxwidth.js',
+				dest: 'tmp/ractive-decorators-minmaxwidth.min.js'
 			}
 		},
 
@@ -56,7 +55,6 @@ module.exports = function ( grunt ) {
 				}]
 			}
 		}
-		
 	});
 
 	grunt.loadNpmTasks( 'grunt-contrib-jshint' );

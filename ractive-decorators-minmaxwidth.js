@@ -20,7 +20,7 @@
 
  Troubleshooting: If you're using a module system in your app (AMD or
  something more nodey) then you may need to change the paths below,
- where it says `require( 'Ractive' )` or `define([ 'Ractive' ]...)`.
+ where it says `require( 'ractive' )` or `define([ 'ractive' ]...)`.
 
  ==========================
 
@@ -33,7 +33,7 @@
 
  // requiring the plugin will 'activate' it - no need to use
  // the return value
- require( 'Ractive-decorators-minmaxwidth' );
+ require( 'ractive-decorators-minmaxwidth' );
 
  Use the decorator in your template with any of the following syntaxes (explanation of the variables in the "options" syntax):
 
@@ -87,12 +87,12 @@
 
     // Common JS (i.e. browserify) environment
     if ( typeof module !== 'undefined' && module.exports && typeof require === 'function' ) {
-        factory( require( 'Ractive' ) );
+        factory( require( 'ractive' ) );
     }
 
     // AMD?
     else if ( typeof define === 'function' && define.amd ) {
-        define([ 'Ractive' ], factory );
+        define([ 'ractive' ], factory );
     }
 
     // browser global
@@ -105,6 +105,7 @@
     }
 
 }( typeof window !== 'undefined' ? window : this, function ( Ractive ) {
+    'use strict';
 
     var isIE = /*@cc_on!@*/0,
         requestFrame = window.requestAnimationFrame ||
@@ -117,8 +118,7 @@
         _poller_runner,
         _poller_elements = [];
 
-    function debounceTrigger(){
-        var el = this;
+    function debounceTrigger(el){
         if (!el.__trigger__) {
             el.__trigger__ = requestFrame(function(){
                 var size = el._lastSize || {width:el.offsetWidth,height:el.offsetHeight};
@@ -132,28 +132,28 @@
 
     // for non-svg
     function attachObject(box,sensorDataAttr){
-        box.setAttribute(sensorDataAttr,'true');
+        box.setAttribute(sensorDataAttr,'');
         addSensorStyles(sensorDataAttr);
         var obj = document.createElement('object');
         obj.__querybox__ = box;
-        obj.onload = objectLoad;
+        obj.onload = objectLoad.bind(null, obj);
         obj.type = 'text/html';
         if (!isIE) obj.data = 'about:blank';
         box.appendChild(obj);
         if (isIE) obj.data = 'about:blank'; // must add data source after insertion, because IE is a goon
         return obj;
     }
-    function objectLoad(){
-        var box = this.__querybox__,
-            doc = box.__eq__.doc = this.contentDocument,
+    function objectLoad(obj){
+        var box = obj.__querybox__,
+            doc = box.__eq__.doc = obj.contentDocument,
             win = doc.defaultView || doc.parentWindow;
 
         doc.__querybox__ = box;
         win.addEventListener('resize', function(){
-            debounceTrigger.call(box);
+            debounceTrigger(box);
         });
         box.__eq__.loaded = true;
-        debounceTrigger.call(box);
+        debounceTrigger(box);
     }
     function addSensorStyles(sensorDataAttr){
         if(!styles_added[sensorDataAttr]){
@@ -188,7 +188,7 @@
 
                 if(_newSize.width !== _lastSize.width || _newSize.height !== _lastSize.height){
                     element._lastSize = _newSize;
-                    debounceTrigger.call(element);
+                    debounceTrigger(element);
                 }
             });
         },_poller_interval);
@@ -236,7 +236,7 @@
             R = node._ractive.root;
 
         if(arguments.length < 2) {
-            throw new Error( 'Ractive-decorators-minmaxwidth needs at least one argument. See http://cfenzo.github.io/Ractive-decorators-minmaxwidth/ for documentation and examples.' );
+            throw new Error( 'ractive-decorators-minmaxwidth needs at least one argument. See http://cfenzo.github.io/Ractive-decorators-minmaxwidth/ for documentation and examples.' );
         }
 
         function on_modified(size){
@@ -244,11 +244,13 @@
                 maxWidths = [],
                 node_width = size.width;
 
-            breakpoints.forEach(function(width){
-                (node_width>=parseInt(width)?minWidths:maxWidths).push(width);
-            });
-            node.setAttribute('data-min-width',minWidths.join(' '));
-            node.setAttribute('data-max-width',maxWidths.join(' '));
+            if (breakpoints.length > 0) {
+                breakpoints.forEach(function(width){
+                    (node_width>=parseInt(width)?minWidths:maxWidths).push(width);
+                });
+                node.setAttribute('data-min-width',minWidths.join(' '));
+                node.setAttribute('data-max-width',maxWidths.join(' '));
+            }
             if(keypath) R.set(keypath, node_width);
             if(isIE) node.className = node.className; // ugly IE8 hack to reset styles
         }
